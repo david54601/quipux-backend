@@ -32,8 +32,8 @@ public class ConfiguracionSeguridad {
                     .authorizeHttpRequests(requests -> requests
                             .requestMatchers("/api/auth/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/lists/**").hasAnyRole(ADMIN, USER)
-                            .requestMatchers(HttpMethod.POST, "/lists").hasRole(ADMIN)
-                            .requestMatchers(HttpMethod.DELETE, "/lists/**").hasRole(ADMIN)
+                            .requestMatchers(HttpMethod.POST, "/lists").hasAuthority(ADMIN)
+                            .requestMatchers(HttpMethod.DELETE, "/lists/**").hasAuthority(ADMIN)
                             .anyRequest()
                             .authenticated())
                     .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);

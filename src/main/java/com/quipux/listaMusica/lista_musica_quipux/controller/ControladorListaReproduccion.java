@@ -51,12 +51,14 @@ public class ControladorListaReproduccion {
 
     @DeleteMapping("/{listName}")
     public ResponseEntity<Void> eliminarListaReproduccionPorNombre(@PathVariable("listName") String nombre){
-        try{        
+        try {
             servicio.eliminarListaReproduccionPorNombre(nombre);
             return ResponseEntity.noContent().build();
-         }catch(Error e){
-         
-           return ResponseEntity.status(404).build();
-         }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build(); // Esto evita errores 500 sin control
+        }
     }
+    
 }
