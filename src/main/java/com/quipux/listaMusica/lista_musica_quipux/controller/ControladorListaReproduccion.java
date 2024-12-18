@@ -8,10 +8,13 @@ import com.quipux.listaMusica.lista_musica_quipux.domain.dto.RespuestaListaRepro
 import com.quipux.listaMusica.lista_musica_quipux.service.ServicioListaReproduccion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/listas")
+@RequestMapping("/lists")
 public class ControladorListaReproduccion {
 
     private final ServicioListaReproduccion servicio;
@@ -26,18 +29,36 @@ public class ControladorListaReproduccion {
     }
 
     @GetMapping("/{listName}")
-    RespuestaListaReproduccionDto obtenerListaReproduccionPorNombre(@PathVariable("listName") String nombre){
-        return servicio.obtenerListaReproduccionPorNombre(nombre);
+    public ResponseEntity<RespuestaListaReproduccionDto> obtenerListaReproduccionPorNombre(@PathVariable("listName") String nombre){
+        RespuestaListaReproduccionDto lista= servicio.obtenerListaReproduccionPorNombre(nombre);
+        if(lista==null){
+            return ResponseEntity.status(404).body(null);
+        }
+        return ResponseEntity.ok(lista);
     }
 
-    @PostMapping("")
-    public ResponseEntity<RespuestaListaReproduccionDto> guardarListaReproduccion(@RequestBody PeticionListaReproduccionDto dto){
-        return ResponseEntity.ok(servicio.guardarListaReproduccion(dto));
+   public ResponseEntity<RespuestaListaReproduccionDto> guardarListaReproduccion(@RequestBody PeticionListaReproduccionDto dto) {
+    if (dto.getNombre() == null || dto.getNombre().isEmpty()) {
+        return ResponseEntity.badRequest().build();
     }
+    RespuestaListaReproduccionDto nuevaLista = servicio.guardarListaReproduccion(dto);
+    URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+          .path("/{listName}")
+          .buildAndExpand(nuevaLista.getNombre())
+          .toUri();
+    return ResponseEntity.created(location).body(nuevaLista);
+}
 
     @DeleteMapping("/{listName}")
     public ResponseEntity<Void> eliminarListaReproduccionPorNombre(@PathVariable("listName") String nombre){
-        servicio.eliminarListaReproduccionPorNombre(nombre);
-        return ResponseEntity.noContent().build();
+        try {
+            servicio.eliminarListaReproduccionPorNombre(nombre);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build(); // Esto evita errores 500 sin control
+        }
     }
+    
 }
