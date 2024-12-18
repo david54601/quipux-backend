@@ -19,5 +19,4 @@ public class ListaReproduccionEntity {
     private String nombre;
 
     private String descripcion;
-    
 }

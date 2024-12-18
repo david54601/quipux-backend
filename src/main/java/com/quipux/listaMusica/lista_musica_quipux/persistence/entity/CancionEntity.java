@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "canciones")
+@Table(name = "CANCIONES")
 @Getter
 @Setter
 @NoArgsConstructor
