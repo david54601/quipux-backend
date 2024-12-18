@@ -6,10 +6,6 @@ import com.quipux.listaMusica.lista_musica_quipux.config.JwtUtil;
 import com.quipux.listaMusica.lista_musica_quipux.domain.dto.LoginDto;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,18 +23,17 @@ public class ControladorAutorization {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-   @PostMapping("/login")
-public ResponseEntity<Map<String, String>> login(@RequestBody LoginDto loginDTO) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword())
-    );
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody LoginDto loginDTO) {
+        UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(
+                loginDTO.getUsername(), loginDTO.getPassword());
+        Authentication authentication = this.authenticationManager.authenticate(login);
 
-    String jwt = jwtUtil.create(loginDTO.getUsername());
+        System.out.println(authentication.isAuthenticated());
+        System.out.println(authentication.getPrincipal());
 
-    Map<String, String> response = new HashMap<>();
-    response.put("token", jwt);
+        String jwt = jwtUtil.create(loginDTO.getUsername());
 
-    return ResponseEntity.ok(response);
-}
-
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwt).build();
+    }
 }

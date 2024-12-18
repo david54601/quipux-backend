@@ -31,9 +31,9 @@ public class ConfiguracionSeguridad {
                             httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(requests -> requests
                             .requestMatchers("/api/auth/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/listas/**").hasAnyRole(ADMIN, USER)
-                            .requestMatchers(HttpMethod.POST, "/listas").hasRole(ADMIN)
-                            .requestMatchers(HttpMethod.DELETE, "/listas/**").hasRole(ADMIN)
+                            .requestMatchers(HttpMethod.GET, "/lists/**").hasAnyRole(ADMIN, USER)
+                            .requestMatchers(HttpMethod.POST, "/lists").hasAuthority(ADMIN)
+                            .requestMatchers(HttpMethod.DELETE, "/lists/**").hasAuthority(ADMIN)
                             .anyRequest()
                             .authenticated())
                     .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);
